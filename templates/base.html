@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Somshubhro Guha - Portfolio</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Playfair+Display:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js" defer></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            scroll-behavior: smooth;
+        }
+        h1, h2, h3 {
+            font-family: 'Playfair Display', serif;
+        }
+        .bg-primary {
+            background-color: #1a202c;
+        }
+        .text-accent {
+            color: #e53e3e;
+        }
+        .bg-accent {
+            background-color: #e53e3e;
+        }
+        .hover-accent:hover {
+            color: #e53e3e;
+        }
+        .glow {
+            box-shadow: 0 0 20px rgba(229, 62, 62, 0.8);
+        }
+        .hover-glow:hover {
+            box-shadow: 0 0 25px rgba(229, 62, 62, 1);
+        }
+        /* Smooth Hover Effect */
+        .hover-smooth:hover {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-200">
+    <!-- Navbar -->
+    <nav class="bg-primary text-gray-200 fixed w-full z-20 shadow-lg fade-in">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <!-- Updated: Removed red accent from name -->
+            <a href="/" class="text-3xl font-bold hover-glow">Somshubhro Guha</a>
+            <ul class="flex space-x-6 text-lg">
+                <li><a href="/" class="hover-accent hover-smooth">Home</a></li>
+                <li><a href="/about" class="hover-accent hover-smooth">About</a></li>
+                <li><a href="/skills" class="hover-accent hover-smooth">Skills</a></li>
+                <li><a href="/portfolio" class="hover-accent hover-smooth">Portfolio</a></li>
+                <li><a href="/passions" class="hover-accent hover-smooth">Passions</a></li>
+                <li><a href="/contact" class="hover-accent hover-smooth">Contact</a></li>
+                <li><a href="/game" class="hover-accent hover-smooth">Fun</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Page Content -->
+    <div class="pt-20">
+        {% block content %}
+        {% endblock %}
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-primary text-gray-300 py-6 mt-20 fade-in" data-aos="fade-up">
+        <div class="container mx-auto text-center">
+            <p>&copy; 2025 Somshubhro Guha. All Rights Reserved.</p>
+            <p>Built with ❤️ using Flask and Tailwind CSS.</p>
+            <div class="mt-4 flex justify-center space-x-4">
+                <a href="https://github.com" class="hover-accent hover-smooth"><i class="fab fa-github fa-2x"></i></a>
+                <a href="https://linkedin.com" class="hover-accent hover-smooth"><i class="fab fa-linkedin fa-2x"></i></a>
+                <a href="https://twitter.com" class="hover-accent hover-smooth"><i class="fab fa-twitter fa-2x"></i></a>
+            </div>
+        </div>
+    </footer>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            AOS.init({
+                duration: 1200,
+                easing: "ease-in-out",
+                once: true,
+            });
+
+            gsap.from("nav", { duration: 1, y: -50, opacity: 0 });
+        });
+    </script>
+</body>
+</html>

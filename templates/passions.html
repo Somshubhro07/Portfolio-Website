@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mx-auto py-10">
+  <h1 class="text-4xl font-extrabold text-center text-blue-400 mb-8 animate-bounce">My Passions</h1>
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+    <!-- Cricket -->
+    <div class="bg-gray-800 p-6 rounded-lg shadow-lg transform hover:scale-105 transition duration-300 ease-in-out">
+      <h2 class="text-2xl font-semibold text-blue-400 mb-4 flex items-center">
+        <i class="fas fa-baseball-ball text-yellow-400 mr-2 animate-spin-slow"></i> Cricket
+      </h2>
+      <p class="text-gray-300">
+        I love playing cricket during my free time. It keeps me active and teaches me teamwork and strategy.
+      </p>
+    </div>
+    <!-- Drumming -->
+    <div class="bg-gray-800 p-6 rounded-lg shadow-lg transform hover:scale-105 transition duration-300 ease-in-out">
+      <h2 class="text-2xl font-semibold text-blue-400 mb-4 flex items-center">
+        <i class="fas fa-drum text-purple-400 mr-2 animate-pulse"></i> Drumming
+      </h2>
+      <p class="text-gray-300">
+        Drumming is a rhythm I live by. It energizes me and is a creative outlet for my emotions.
+      </p>
+    </div>
+    <!-- Tabla -->
+    <div class="bg-gray-800 p-6 rounded-lg shadow-lg transform hover:scale-105 transition duration-300 ease-in-out">
+      <h2 class="text-2xl font-semibold text-blue-400 mb-4 flex items-center">
+        <i class="fas fa-music text-red-400 mr-2 animate-bounce"></i> Tabla
+      </h2>
+      <p class="text-gray-300">
+        Playing the tabla connects me to my cultural roots and enhances my focus and coordination.
+      </p>
+    </div>
+  </div>
+</div>
+{% endblock %}

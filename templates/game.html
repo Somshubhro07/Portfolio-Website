@@ -1,0 +1,199 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <div class="container mx-auto py-10">
+    <h1 class="text-4xl font-extrabold text-center text-indigo-700 mb-8">Guess the Shape Game</h1>
+
+    <div class="text-center text-lg mb-4">
+      <span id="timer" class="text-gray-900">Time Left: <strong id="time-left" class="text-red-500">60</strong> seconds</span>
+    </div>
+
+    <!-- The Game Board -->
+    <div class="game-board bg-gradient-to-r from-green-300 to-blue-500 p-6 rounded-lg shadow-lg max-w-lg mx-auto">
+      <p class="text-center text-xl mb-6 text-white" id="shape-hint">Hint: Which shape is this?</p>
+      <div class="shape-container flex justify-center items-center mb-6">
+        <div id="shape-display" class="w-32 h-32 rounded-lg bg-gray-200"></div>
+      </div>
+      <div id="shape-options" class="grid grid-cols-2 gap-6">
+        <!-- Shape options will be dynamically generated here -->
+      </div>
+      <div class="mt-4 text-center">
+        <span id="result" class="text-xl text-gray-100"></span>
+      </div>
+    </div>
+
+    <!-- Leaderboard Section -->
+    <div class="text-center mt-8">
+      <h2 class="text-2xl text-gray-900 mb-4">Leaderboard</h2>
+      <ul id="leaderboard" class="list-disc list-inside">
+        <!-- Leaderboard entries will go here -->
+      </ul>
+    </div>
+
+    <div class="text-center mt-8">
+      <button id="restartBtn" class="bg-yellow-500 text-white px-6 py-2 rounded-full hidden hover:bg-yellow-600 focus:outline-none">Play Again</button>
+    </div>
+  </div>
+
+  <!-- JS Script -->
+  <script>
+    const shapes = ['circle', 'square', 'triangle', 'rectangle', 'oval', 'pentagon'];
+    let targetShape = '';
+    let score = 0;
+    let timeLeft = 60;
+    let gameTimer;
+    const timerDisplay = document.getElementById('time-left');
+    const shapeHint = document.getElementById('shape-hint');
+    const resultDisplay = document.getElementById('result');
+    const shapeOptionsContainer = document.getElementById('shape-options');
+    const shapeDisplay = document.getElementById('shape-display');
+    const restartBtn = document.getElementById('restartBtn');
+    const leaderboardList = document.getElementById('leaderboard');
+    let leaderboard = [];
+
+    // Function to shuffle array (used for randomizing shape options)
+    function shuffle(array) {
+      let shuffledArray = array.slice();
+      for (let i = shuffledArray.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffledArray[i], shuffledArray[j]] = [shuffledArray[j], shuffledArray[i]];
+      }
+      return shuffledArray;
+    }
+
+    // Generate a random shape and options for the game
+    function generateGame() {
+      const shuffledShapes = shuffle(shapes);
+      targetShape = shuffledShapes[Math.floor(Math.random() * shuffledShapes.length)];
+      shapeHint.textContent = `Hint: Which shape is this?`;
+      
+      shapeOptionsContainer.innerHTML = '';
+      shuffledShapes.slice(0, 4).forEach(shape => {
+        const shapeOption = document.createElement('div');
+        shapeOption.classList.add('shape-option', 'cursor-pointer', 'p-4', 'rounded-lg', 'shadow-md', 'flex', 'justify-center', 'items-center', 'transition', 'duration-300', 'hover:bg-indigo-400');
+        shapeOption.innerHTML = `<p class="text-xl text-white">${shape}</p>`;
+        shapeOption.addEventListener('click', () => checkAnswer(shape));
+        shapeOptionsContainer.appendChild(shapeOption);
+      });
+
+      // Set the visual shape in the center of the game
+      setShape(shapeDisplay, targetShape);
+    }
+
+    // Function to set the visual shape
+    function setShape(element, shape) {
+      element.classList.remove('rounded-lg', 'bg-gray-200', 'w-32', 'h-32', 'w-48', 'h-32', 'rounded-full');
+      
+      switch(shape) {
+        case 'circle':
+          element.classList.add('w-32', 'h-32', 'rounded-full', 'bg-blue-600');
+          break;
+        case 'square':
+          element.classList.add('w-32', 'h-32', 'bg-yellow-500');
+          break;
+        case 'triangle':
+          element.classList.add('w-0', 'h-0', 'border-l-16', 'border-r-16', 'border-b-32', 'border-b-green-500', 'rotate-180');
+          break;
+        case 'rectangle':
+          element.classList.add('w-48', 'h-32', 'bg-pink-700');
+          break;
+        case 'oval':
+          element.classList.add('w-48', 'h-32', 'rounded-full', 'bg-purple-600');
+          break;
+        case 'pentagon':
+          element.classList.add('w-32', 'h-32', 'bg-red-600', 'clip-path-polygon(50% 0%, 0% 100%, 100% 100%, 0% 0%)');
+          break;
+      }
+    }
+
+    // Check the selected shape answer
+    function checkAnswer(selectedShape) {
+      if (selectedShape === targetShape) {
+        score++;
+        resultDisplay.textContent = `Correct! Score: ${score}`;
+        resultDisplay.classList.add('text-green-600');
+        resultDisplay.classList.remove('text-red-600');
+      } else {
+        resultDisplay.textContent = `Wrong! The correct shape was ${targetShape}. Score: ${score}`;
+        resultDisplay.classList.add('text-red-600');
+        resultDisplay.classList.remove('text-green-600');
+      }
+
+      setTimeout(() => {
+        resultDisplay.textContent = '';
+        generateGame();
+      }, 1000);
+    }
+
+    // Function to submit the score to the Flask backend (using AJAX)
+    function submitScoreToLeaderboard(score) {
+        $.ajax({
+            url: '/submit_score',
+            type: 'POST',
+            data: { score: score },
+            success: function(response) {
+                console.log('Score submitted successfully');
+                // Optionally, you can redirect to a different page, or update the leaderboard dynamically here
+                updateLeaderboard();
+            },
+            error: function(error) {
+                console.log('Error submitting score: ', error);
+            }
+        });
+    }
+
+    // Start the timer countdown
+    function startTimer() {
+      gameTimer = setInterval(() => {
+        if (timeLeft > 0) {
+          timeLeft--;
+          timerDisplay.textContent = timeLeft;
+        } else {
+          clearInterval(gameTimer);
+          gameOver();  // This triggers the score submission
+          restartBtn.classList.remove('hidden');
+        }
+      }, 1000);
+    }
+
+    // When the game is over, submit the score to the leaderboard
+    function gameOver() {
+        // After the game is over, submit the score to the leaderboard
+        submitScoreToLeaderboard(score);
+        // You can also alert the user or perform any other action after submitting the score
+        alert('Game Over! Your final score is: ' + score);
+    }
+
+    // Update the leaderboard display
+    function updateLeaderboard() {
+        $.ajax({
+            url: '/leaderboard',
+            type: 'GET',
+            success: function(data) {
+                const leaderboardList = $('#leaderboard');
+                leaderboardList.empty(); // Clear the current list
+                data.forEach(function(entry, index) {
+                    leaderboardList.append('<li>Rank ' + (index + 1) + ': ' + entry.score + ' Correct Answers</li>');
+                });
+            },
+            error: function(error) {
+                console.log('Error loading leaderboard: ', error);
+            }
+        });
+    }
+
+    // Restart the game
+    restartBtn.addEventListener('click', () => {
+      score = 0;
+      timeLeft = 60;
+      timerDisplay.textContent = timeLeft;
+      generateGame();
+      startTimer();
+      restartBtn.classList.add('hidden');
+    });
+
+    // Initialize the game
+    generateGame();
+    startTimer();
+  </script>
+{% endblock %}
